@@ -974,7 +974,7 @@
     <column id="242" parent="235" name="content">
       <Position>7</Position>
       <Comment>文件内容</Comment>
-      <DataType>blob|0s</DataType>
+      <DataType>longblob|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
     <key id="243" parent="235" name="PRIMARY">

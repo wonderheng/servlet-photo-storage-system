@@ -2,7 +2,7 @@
 <html lang="en" data-th-fragment="header">
 <head>
     <meta charset="UTF-8">
-    <title>MongoDB File Server</title>
+    <title>MySQL File Server</title>
 </head>
 <body >
 <div align="center">

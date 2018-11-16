@@ -1,5 +1,6 @@
 package top.wonderheng.dao.impl;
 
+import org.bson.types.Binary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,6 +12,7 @@ import top.wonderheng.domain.SmallFile;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -26,19 +28,20 @@ public class DatabaseSmallDaoImpl implements SmallFileDao {
 
     @Override
     public void save(SmallFile smallFile) {
-        String sql = "insert into db_photo (name,content_type,size,upload_date,md5,content) values (?,?,?,?,?,?)";
-        jdbcTemplate.update(sql,
-                smallFile.getName(),
-                smallFile.getContentType(),
-                smallFile.getSize(),
-                smallFile.getUploadDate(),
-                smallFile.getMd5(),
-                smallFile.getContent());
+        String sql = "insert into db_photo (id,name,content_type,size,upload_date,md5,content) values (?,?,?,?,?,?,?)";
+            int a = jdbcTemplate.update(sql,
+                    smallFile.getId(),
+                    smallFile.getName(),
+                    smallFile.getContentType(),
+                    smallFile.getSize(),
+                    smallFile.getUploadDate(),
+                    smallFile.getMd5(),
+                    smallFile.getContent().getData());
     }
 
     @Override
     public void delete(String id) {
-        String sql = "delete * from db_photo where id = ?";
+        String sql = "delete from db_photo where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
@@ -51,10 +54,10 @@ public class DatabaseSmallDaoImpl implements SmallFileDao {
                 SmallFile sf = new SmallFile();
                 sf.setName(resultSet.getString("name"));
                 sf.setContentType(resultSet.getString("content_type"));
-                sf.setName(resultSet.getString("size"));
-                sf.setName(resultSet.getString("upload_date"));
-                sf.setContentType(resultSet.getString("md5"));
-                sf.setName(resultSet.getString("content"));
+                sf.setSize(resultSet.getLong("size"));
+                sf.setUploadDate(resultSet.getTimestamp("upload_date").toLocalDateTime());
+                sf.setMd5(resultSet.getString("md5"));
+                sf.setContent(new Binary(resultSet.getBytes("content")));
                 return sf;
             }
         }, id).get(0);
@@ -63,20 +66,28 @@ public class DatabaseSmallDaoImpl implements SmallFileDao {
 
     @Override
     public List<SmallFile> query(Page page) {
+        //0 ~ length-1
+        //pageIndex 1
+        // (pageIndex-1)*pageSize   ~  pageIndex*pageSize
+        //[0 , pageSize)
+        int pageIndex = page.getPageIndex()-1;
+        int pageSize = page.getPageSize();
+
         String sql = "select id, name, content_type, size, upload_date, md5, content from db_photo limit ? offset ?;";
         List<SmallFile> list = this.jdbcTemplate.query(sql, new RowMapper<SmallFile>() {
             @Override
             public SmallFile mapRow(ResultSet resultSet, int i) throws SQLException {
                 SmallFile sf = new SmallFile();
+                sf.setId(resultSet.getString("id"));
                 sf.setName(resultSet.getString("name"));
                 sf.setContentType(resultSet.getString("content_type"));
-                sf.setName(resultSet.getString("size"));
-                sf.setName(resultSet.getString("upload_date"));
-                sf.setContentType(resultSet.getString("md5"));
-                sf.setName(resultSet.getString("content"));
+                sf.setSize(resultSet.getLong("size"));
+                sf.setUploadDate(resultSet.getTimestamp("upload_date").toLocalDateTime());
+                sf.setMd5(resultSet.getString("md5"));
+                sf.setContent(new Binary(resultSet.getBytes("content")));
                 return sf;
             }
-        }, page.getPageSize(), page.getPageIndex());
+        }, pageSize, pageIndex);
         return list;
     }
 }

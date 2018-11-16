@@ -54,7 +54,6 @@
     <form method="POST" enctype="multipart/form-data" action="/view/upload">
         <table>
             <tr>
-                <td>请选择文件上传:</td>
                 <td><input type="file" name="filename"/></td>
                 &nbsp;&nbsp;&nbsp;&nbsp;
                 <td><input type="submit" value="一键上传"/></td>

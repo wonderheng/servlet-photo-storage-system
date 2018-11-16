@@ -20,7 +20,7 @@ import java.io.InputStream;
  * @CreateTime: 2018-11-10 23:48
  */
 @WebServlet(urlPatterns = {"/view/upload"})
-@MultipartConfig(maxFileSize = 1024 * 1024 * 3) //2M
+@MultipartConfig(maxFileSize = 1024 * 1024 * 3) //6M
 public class FileViewUploadServlet extends FileViewBaseServlet {
 
 
